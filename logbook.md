@@ -18,7 +18,7 @@ Did some sketches for the poster and now everything. The toilet paper dispenser 
 - 1 × PIR sensor (for detecting presence)
 - 1 × IR distance sensor (for detecting toilet paper)
 - 1 × Ultrasound sensor (for detecting toilet paper)
-- 1 × continuously rotating servomotor (for unrolling the toilet paper roll)
+- 1 × continuously rotating servomotor (for unrolling the toilet paper roll). I ordered the ds04-nfc motor.
 
 The toilet paper dispenser will be able to estimate the amount of toilet paper left by computing the diameter of the toilet paper roll. It will do that by checking the angle that is needed to unroll a single toilet paper roll (which has a known height).
 
@@ -37,3 +37,11 @@ They didn't have a continuously rotating servo, so I ordered one online.
 I have tried plugging in the IR sensor and it works. This was my first time dealing with any electronics, so it took me some time to figure out everything, and make sure I wasn't going to fry any components today.
 
 I had some trouble with the servomotor, will have to check that out another day.
+
+## 08/03/2022
+
+Trying to get the servo motor to work. Done!
+
+Using the ESP32Servo library and pin 12/D13 as the data pin for the servo (because it's a PWM pin), I can initialize the Servo object, attach it, and then manipulate the servo using Servo::writeMicroseconds with 1500 being stop, 1000 being 100% backwards and 2000 100% forwards (got it from [this](https://elektro.turanis.de/html/prj036/index.html) website).
+
+Now I will go to the shed and try to make the mount for the toilet paper roll.
