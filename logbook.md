@@ -45,3 +45,13 @@ Trying to get the servo motor to work. Done!
 Using the ESP32Servo library and pin 12/D13 as the data pin for the servo (because it's a PWM pin), I can initialize the Servo object, attach it, and then manipulate the servo using Servo::writeMicroseconds with 1500 being stop, 1000 being 100% backwards and 2000 100% forwards (got it from [this](https://elektro.turanis.de/html/prj036/index.html) website).
 
 Now I will go to the shed and try to make the mount for the toilet paper roll.
+
+It has been done. I've used an empty coca cola plastic bottle.
+
+I have also somewhat calibrated my PIR sensor.
+
+## 09/03/2022
+
+Trying to design the box in which the device goes into.
+
+Decided not to go with a very sophisticated design for the initial prototype, will just stick some cardboard together to barely make it work. Will need to buy some scissors and duct tape tomorrow.
