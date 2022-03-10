@@ -2,36 +2,57 @@
 #include <analogWrite.h>
 #include <ESP32Tone.h>
 #include <ESP32PWM.h>
+#include <Ticker.h>
+
+#include "CircularBuffer.hpp"
+#include "SensorValue.hpp"
 
 #define IR1_PIN 36
+#define IR2_PIN 34
 #define LED_BUILTIN 2
 #define PIR_PIN 39
 #define SERVO_PIN 12
 
-Servo servo;
+SensorValue ir1(20);
+SensorValue ir2(20);
+SensorValue pir(5);
 
-void setup() {
-  // put your setup code here, to run once:
-  // pinMode(IR1_PIN, INPUT);
-  // pinMode(LED_BUILTIN, OUTPUT);
-  // pinMode(PIR_PIN, INPUT);
-  servo.attach(SERVO_PIN);
+Servo servo;
+Ticker irUpdateTicker;
+Ticker pirUpdateTicker;
+Ticker printStatesTicker;
+
+void setup()
+{
   Serial.begin(9600);
+
+  pinMode(LED_BUILTIN, OUTPUT);
+  pinMode(IR1_PIN, INPUT);
+  pinMode(IR2_PIN, INPUT);
+  pinMode(PIR_PIN, INPUT);
+  servo.attach(SERVO_PIN);
+
+  irUpdateTicker.attach_ms(50, updateIRSensors);
+  pirUpdateTicker.attach_ms(500, updatePIRSensors);
+  printStatesTicker.attach_ms(1000, printSensorsStates);
 }
 
-void loop() {
-  // int ir1_act = digitalRead(IR1_PIN);
-  // int pir_act = digitalRead(PIR_PIN);
-  // Serial.print(ir1_act);
-  // Serial.print(" ");
-  // Serial.println(pir_act);
-  // digitalWrite(LED_BUILTIN, ir1_act ? LOW : HIGH);
-  // digitalWrite(SERVO_PIN, HIGH);
-  // delay(1700);
-  // digitalWrite(SERVO_PIN, LOW);
-  // delay(500);
-//  servo.writeMicroseconds(2000); // FULL FORWARD
-  delay(2000);
-  servo.writeMicroseconds(1500); // STOP
-  delay(2000);
+void printSensorsStates()
+{
+  Serial.println("IR1: " + String(ir1.getValue()) + " IR2:" + String(ir2.getValue()) + " PIR:" + String(pir.getValue()));
+}
+
+void updateIRSensors()
+{
+  ir1.setValue(!digitalRead(IR1_PIN));
+  ir2.setValue(!digitalRead(IR2_PIN));
+}
+
+void updatePIRSensors() {
+  pir.setValue(digitalRead(PIR_PIN));
+  digitalWrite(LED_BUILTIN, pir.getValue() ? HIGH : LOW);
+}
+
+void loop()
+{
 }

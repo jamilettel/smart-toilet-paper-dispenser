@@ -55,3 +55,17 @@ I have also somewhat calibrated my PIR sensor.
 Trying to design the box in which the device goes into.
 
 Decided not to go with a very sophisticated design for the initial prototype, will just stick some cardboard together to barely make it work. Will need to buy some scissors and duct tape tomorrow.
+
+## 10/03/2022
+
+Trying to build the first prototype out of cardboard.
+
+What I need to have place for:
+- the servo (middle)
+- the PIR (on top)
+- IR1 (under servo, where we will detect toilet paper presence)
+- IR2 (1 toilet paper sheet height under IR1)
+
+I managed to build everything out of empty Coca Cola bottles and carboard, but kind of burned the PIR sensor. Will need to replace it tomorrow.
+
+Now trying to get everything (exept the PIR) to work together, and hopefully be done with most of the arduino code today.
