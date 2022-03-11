@@ -37,12 +37,12 @@ void ToiletPaperRoll::backwards()
 
 void ToiletPaperRoll::waitDelay()
 {
-    delay(20);
+    delay(5);
 }
 
 void ToiletPaperRoll::changeDirectionDelay()
 {
-    delay(500);
+    delay(200);
 }
 
 unsigned long ToiletPaperRoll::getSheetTime()
@@ -56,7 +56,7 @@ unsigned long ToiletPaperRoll::getSheetTime()
     changeDirectionDelay();
     while (_ir2.getValue()) {
         backwards();
-        delay(25);
+        waitDelay();
     }
     stop();
     changeDirectionDelay();
@@ -79,7 +79,6 @@ unsigned long ToiletPaperRoll::getSheetTime()
     stop();
     changeDirectionDelay();
 
-    Serial.println("One_sheet:" + String(time));
     return time;
 }
 
@@ -90,5 +89,35 @@ void ToiletPaperRoll::calibrate(int tries)
         time += getSheetTime();
     }
     _fullOneRollTime = time / tries;
-    Serial.println("One_full_sheet_time:" + String(_fullOneRollTime));
+}
+
+void ToiletPaperRoll::getRollTime(int tries)
+{
+    unsigned long time = 0;
+    for (int i = 0; i < tries; i++) {
+        time += getSheetTime();
+    }
+    _oneRollTime = time / tries;
+}
+
+float ToiletPaperRoll::getFullPerimeter() const
+{
+    return _fullDiameter * M_PI;
+}
+
+/** Compute current permiter of the toilet paper roll.
+ * Uses values from user (like sheet length and the full roll's diameter),
+ * and values from the calibration (like the time it takes to roll out 1 sheet of paper).
+ * _oneRollTime must be up to date.
+ */
+float ToiletPaperRoll::getCurrentPerimeter() const
+{
+    float full1SheetAngle = _sheetLength * 360.0 / getFullPerimeter();
+    float angleNow = _oneRollTime * full1SheetAngle / _fullOneRollTime;
+    return 360.0 * _sheetLength / angleNow;
+}
+
+float ToiletPaperRoll::percentageLeft() const
+{
+    return min(100.0, max((getCurrentPerimeter() - 5.0) / (getFullPerimeter() - _emptyDiameter) * 100.0, 0.0));
 }

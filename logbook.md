@@ -69,3 +69,15 @@ What I need to have place for:
 I managed to build everything out of empty Coca Cola bottles and carboard, but kind of burned the PIR sensor. Will need to replace it tomorrow.
 
 Now trying to get everything (exept the PIR) to work together, and hopefully be done with most of the arduino code today.
+
+Managed to start working on the calibration of the servo.
+
+## 11/03/2022
+
+Trying to finish the calibration and hopefully start working on the connectivity part of the object.
+
+Calibration done and tested. Works pretty well, but not very accurate; probably due to the flimsy nature of the build.
+You can now calibrate, and then find out the perimeter of the current toilet paper. Using the perimeter, I can estimate the percentage left.
+
+Will now try to start working on the webserver that uses a websocket to communicate with the IoT device, and normal http to communicate
+with the interactive webapp.

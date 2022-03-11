@@ -4,7 +4,9 @@
 #include "SensorValue.hpp"
 #include "ToiletPaperRoll.hpp"
 
+// bottom IR
 #define IR1_PIN 36
+// top IR
 #define IR2_PIN 34
 #define LED_BUILTIN 2
 #define PIR_PIN 39
@@ -32,7 +34,7 @@ void setup()
 
     irUpdateTicker.attach_ms(10, updateIRSensors);
     pirUpdateTicker.attach_ms(500, updatePIRSensors);
-    printStatesTicker.attach_ms(1000, printSensorsStates);
+    // printStatesTicker.attach_ms(1000, printSensorsStates);
 
     delay(500);
     tpr.calibrate();
@@ -57,6 +59,7 @@ void updatePIRSensors()
 
 void loop()
 {
-    // tpr.calibrate();
-    delay(200);
+    tpr.getRollTime();
+    Serial.println("percentageLeft:" + String(tpr.percentageLeft()));
+    delay(120000); // wait 1 minute
 }
