@@ -1,6 +1,7 @@
 #include "SensorValue.hpp"
 
-int SensorValue::getValue() const {
+int SensorValue::getValue() const
+{
     if (_buffer.length() == 0)
         return 0;
     float total = 0;
@@ -14,6 +15,7 @@ int SensorValue::getValue() const {
     return total;
 }
 
-void SensorValue::setValue(int value) {
+void SensorValue::setValue(int value)
+{
     _buffer.pushValue(value);
 }

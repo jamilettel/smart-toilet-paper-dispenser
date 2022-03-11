@@ -18,9 +18,10 @@ Ticker irUpdateTicker;
 Ticker pirUpdateTicker;
 Ticker printStatesTicker;
 
-ToiletPaperRoll tpr;
+ToiletPaperRoll tpr(ir1, ir2);
 
-void setup() {
+void setup()
+{
     Serial.begin(9600);
 
     pinMode(LED_BUILTIN, OUTPUT);
@@ -32,43 +33,29 @@ void setup() {
     irUpdateTicker.attach_ms(10, updateIRSensors);
     pirUpdateTicker.attach_ms(500, updatePIRSensors);
     printStatesTicker.attach_ms(1000, printSensorsStates);
+
+    tpr.calibrate();
 }
 
-void printSensorsStates() {
-    Serial.println("IR1: " + String(ir1.getValue()) + " IR2:" +
-                   String(ir2.getValue()) + " PIR:" + String(pir.getValue()));
+void printSensorsStates()
+{
+    Serial.println("IR1: " + String(ir1.getValue()) + " IR2:" + String(ir2.getValue()) + " PIR:" + String(pir.getValue()));
 }
 
-void updateIRSensors() {
+void updateIRSensors()
+{
     ir1.setValue(!digitalRead(IR1_PIN));
     ir2.setValue(!digitalRead(IR2_PIN));
 }
 
-void updatePIRSensors() {
+void updatePIRSensors()
+{
     pir.setValue(digitalRead(PIR_PIN));
     digitalWrite(LED_BUILTIN, pir.getValue() ? HIGH : LOW);
 }
 
-void loop() {
-    static int servoState = 0;
-
-    if (servoState == 0 && ir1.getValue() == 1) {
-        //   servoState = 1;
-        //   servo.writeMicroseconds(1500); // stop a little bit
-        //   delay(500);
-    } else if (servoState == 1 && ir2.getValue() == 0) {
-        //   servoState = 2;
-        //   servo.writeMicroseconds(1500);
-        //   delay(500);
-    }
-
-    if (servoState == 0) {
-        //   servo.writeMicroseconds(1600);
-    } else if (servoState == 1) {
-        //   servo.writeMicroseconds(1380);
-    } else {
-        //   servo.writeMicroseconds(1500);
-    }
-
-    delay(20);
+void loop()
+{
+    tpr.stop();
+    delay(200);
 }

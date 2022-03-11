@@ -7,12 +7,35 @@
 #include <ESP32Tone.h>
 #include <analogWrite.h>
 
-class ToiletPaperRoll {
-   public:
-    void attach(int pin) { _servo.attach(pin); }
+#include "SensorValue.hpp"
 
-   private:
+class ToiletPaperRoll {
+public:
+    ToiletPaperRoll(SensorValue& ir1, SensorValue& ir2);
+    void attach(int pin);
+    void calibrate();
+
+    void forwards();
+    void stop();
+    void backwards();
+
+private:
+    void waitDelay();
+    void changeDirectionDelay();
+
+    enum Direction {
+        FORWARDS,
+        STOP,
+        BACKWARDS,
+    };
+
+private:
     Servo _servo;
+    SensorValue& _ir1;
+    SensorValue& _ir2;
+
+    unsigned long _oneRollTime = 0;
+    Direction _currentDirection = STOP;
 };
 
-#endif  // TOILET_PAPER_ROLL_HPP
+#endif // TOILET_PAPER_ROLL_HPP
