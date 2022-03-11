@@ -119,5 +119,5 @@ float ToiletPaperRoll::getCurrentPerimeter() const
 
 float ToiletPaperRoll::percentageLeft() const
 {
-    return min(100.0, max((getCurrentPerimeter() - 5.0) / (getFullPerimeter() - _emptyDiameter) * 100.0, 0.0));
+    return min(200.0, max((getCurrentPerimeter() - _emptyDiameter) / (getFullPerimeter() - _emptyDiameter) * 100.0, 0.0));
 }

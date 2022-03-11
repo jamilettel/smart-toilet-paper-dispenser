@@ -59,7 +59,7 @@ void updatePIRSensors()
 
 void loop()
 {
+    delay(10000);
     tpr.getRollTime();
     Serial.println("percentageLeft:" + String(tpr.percentageLeft()));
-    delay(120000); // wait 1 minute
 }
