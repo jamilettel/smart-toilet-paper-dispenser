@@ -13,7 +13,7 @@ class ToiletPaperRoll {
 public:
     ToiletPaperRoll(SensorValue& ir1, SensorValue& ir2);
     void attach(int pin);
-    void calibrate();
+    void calibrate(int tries = 5);
 
     void forwards();
     void stop();
@@ -22,6 +22,8 @@ public:
 private:
     void waitDelay();
     void changeDirectionDelay();
+
+    unsigned long getSheetTime();
 
     enum Direction {
         FORWARDS,
@@ -35,6 +37,7 @@ private:
     SensorValue& _ir2;
 
     unsigned long _oneRollTime = 0;
+    unsigned long _fullOneRollTime = 0;
     Direction _currentDirection = STOP;
 };
 

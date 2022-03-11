@@ -45,7 +45,7 @@ void ToiletPaperRoll::changeDirectionDelay()
     delay(500);
 }
 
-void ToiletPaperRoll::calibrate()
+unsigned long ToiletPaperRoll::getSheetTime()
 {
     // positioning the toilet paper in the right spot
     while (!_ir2.getValue()) {
@@ -69,8 +69,7 @@ void ToiletPaperRoll::calibrate()
     }
     stop();
     changeDirectionDelay();
-    _oneRollTime = millis() - time;
-    Serial.println("Time: " + String(_oneRollTime));
+    time = millis() - time;
 
     // retracting
     while (_ir2.getValue()) {
@@ -79,4 +78,17 @@ void ToiletPaperRoll::calibrate()
     }
     stop();
     changeDirectionDelay();
+
+    Serial.println("One_sheet:" + String(time));
+    return time;
+}
+
+void ToiletPaperRoll::calibrate(int tries)
+{
+    unsigned long time = 0;
+    for (int i = 0; i < tries; i++) {
+        time += getSheetTime();
+    }
+    _fullOneRollTime = time / tries;
+    Serial.println("One_full_sheet_time:" + String(_fullOneRollTime));
 }

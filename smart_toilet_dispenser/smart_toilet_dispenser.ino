@@ -34,6 +34,7 @@ void setup()
     pirUpdateTicker.attach_ms(500, updatePIRSensors);
     printStatesTicker.attach_ms(1000, printSensorsStates);
 
+    delay(500);
     tpr.calibrate();
 }
 
@@ -56,6 +57,6 @@ void updatePIRSensors()
 
 void loop()
 {
-    tpr.stop();
+    // tpr.calibrate();
     delay(200);
 }
