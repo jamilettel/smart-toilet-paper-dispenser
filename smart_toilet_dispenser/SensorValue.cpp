@@ -1,12 +1,10 @@
 #include "SensorValue.hpp"
 
-int SensorValue::getValue() const
-{
+int SensorValue::getValue() const {
     if (_buffer.length() == 0)
         return 0;
     float total = 0;
-    for (int i = 0; i < _buffer.length(); i++)
-    {
+    for (int i = 0; i < _buffer.length(); i++) {
         total += (float)_buffer[i];
     }
     total /= _buffer.length();

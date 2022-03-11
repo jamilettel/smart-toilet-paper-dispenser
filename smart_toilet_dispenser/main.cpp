@@ -1,7 +1,6 @@
-#include "CircularBuffer.hpp"
 #include <iostream>
-int main()
-{
+#include "CircularBuffer.hpp"
+int main() {
     CircularBuffer<int> buffer(100);
     for (int i = 0; i < 50; i++)
         buffer.pushValue(i);
@@ -22,5 +21,4 @@ int main()
     for (int i = 0; i < buffer.length(); i++)
         std::cout << buffer[i] << ' ';
     std::cout << std::endl;
-
 }
