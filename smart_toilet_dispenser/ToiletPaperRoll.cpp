@@ -16,7 +16,7 @@ void ToiletPaperRoll::forwards()
     if (_currentDirection == FORWARDS)
         return;
     _currentDirection = FORWARDS;
-    _servo.writeMicroseconds(1600);
+    _servo.writeMicroseconds(1650);
 }
 
 void ToiletPaperRoll::stop()
@@ -32,7 +32,7 @@ void ToiletPaperRoll::backwards()
     if (_currentDirection == BACKWARDS)
         return;
     _currentDirection = BACKWARDS;
-    _servo.writeMicroseconds(1380);
+    _servo.writeMicroseconds(1300);
 }
 
 void ToiletPaperRoll::waitDelay()
@@ -91,7 +91,7 @@ void ToiletPaperRoll::calibrate(int tries)
     _fullOneRollTime = time / tries;
 }
 
-void ToiletPaperRoll::getRollTime(int tries)
+void ToiletPaperRoll::updateRollTime(int tries)
 {
     unsigned long time = 0;
     for (int i = 0; i < tries; i++) {
@@ -112,12 +112,20 @@ float ToiletPaperRoll::getFullPerimeter() const
  */
 float ToiletPaperRoll::getCurrentPerimeter() const
 {
-    float full1SheetAngle = _sheetLength * 360.0 / getFullPerimeter();
+    float full1SheetAngle = _sensorDistance * 360.0 / getFullPerimeter();
     float angleNow = _oneRollTime * full1SheetAngle / _fullOneRollTime;
-    return 360.0 * _sheetLength / angleNow;
+    return 360.0 * _sensorDistance / angleNow;
 }
 
-float ToiletPaperRoll::percentageLeft() const
+float ToiletPaperRoll::getEmptyPerimeter() const {
+    return _emptyDiameter * M_PI;
+}
+
+float ToiletPaperRoll::percentageLeft(bool adjusted) const
 {
-    return min(200.0, max((getCurrentPerimeter() - _emptyDiameter) / (getFullPerimeter() - _emptyDiameter) * 100.0, 0.0));
+    float emptyPerim = getEmptyPerimeter();
+    float perim = (getCurrentPerimeter() - emptyPerim) / (getFullPerimeter() - emptyPerim) * 100.0;
+    if (adjusted)
+        return min(100.0, max(perim * 100.0, 0.0));
+    return perim;
 }

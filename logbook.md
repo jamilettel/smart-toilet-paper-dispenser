@@ -81,3 +81,38 @@ You can now calibrate, and then find out the perimeter of the current toilet pap
 
 Will now try to start working on the webserver that uses a websocket to communicate with the IoT device, and normal http to communicate
 with the interactive webapp.
+
+Did not get much done.
+
+## 14/03/2022
+
+Working on the design of the IoT device. I must be able to 3d print it afterwards.
+
+Found a website for creating the model, Tinkercad. Will work on that.
+
+Good progress today on the design. The main housing of the toilet paper is done. Remains the under part of the object containing the IR sensors and the ESP32.
+
+<img src="images/3d model start.png">
+
+## 18/03/2022
+
+Today, I finished the design of the IoT device on Tinkercad. Will need to see in the shed next week to print it.
+
+<img src="images/3d model end.png">
+
+## 22/03/2022
+
+Going to the shed to try to 3d print the device.
+
+Talked with Keith, we should probably lazer cut the device as it only has flat surfaces. Went back home to get everything in the right format, and now going back to the shed.
+
+Lazer cut it and assembled it. Worked out great, everything fits nicely. Added empty bottles to hold the toilet paper.
+
+Calibration now works a lot better.
+
+<img src="images/assembled iot 1.jpg">
+
+TODO list:
+- Make any servo actions (e.g., calibration) non-blocking so I can easily handle errors (e.g., toilet paper runs out).
+- Add the PIR sensor
+- Work on the server part

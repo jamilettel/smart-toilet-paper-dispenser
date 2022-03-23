@@ -60,6 +60,6 @@ void updatePIRSensors()
 void loop()
 {
     delay(10000);
-    tpr.getRollTime();
-    Serial.println("percentageLeft:" + String(tpr.percentageLeft()));
+    tpr.updateRollTime();
+    Serial.println("percentageLeft:" + String(tpr.percentageLeft(false)));
 }
