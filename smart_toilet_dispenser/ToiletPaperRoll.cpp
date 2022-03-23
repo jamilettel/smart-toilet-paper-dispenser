@@ -1,5 +1,13 @@
 #include "ToiletPaperRoll.hpp"
 
+ToiletPaperRoll::Action::Action(
+    const std::function<bool(const Action&)>& stpCondition,
+    Direction dir)
+    : stopCondition(stpCondition)
+    , direction(dir)
+{
+}
+
 void ToiletPaperRoll::attach(int pin)
 {
     _servo.attach(pin);
@@ -11,93 +19,101 @@ ToiletPaperRoll::ToiletPaperRoll(SensorValue& ir1, SensorValue& ir2)
 {
 }
 
-void ToiletPaperRoll::forwards()
+void ToiletPaperRoll::setDirection(Direction dir)
 {
-    if (_currentDirection == FORWARDS)
+    if (_currentDirection == dir)
         return;
-    _currentDirection = FORWARDS;
-    _servo.writeMicroseconds(1650);
-}
-
-void ToiletPaperRoll::stop()
-{
-    if (_currentDirection == STOP)
-        return;
-    _currentDirection = STOP;
-    _servo.writeMicroseconds(1500);
-}
-
-void ToiletPaperRoll::backwards()
-{
-    if (_currentDirection == BACKWARDS)
-        return;
-    _currentDirection = BACKWARDS;
-    _servo.writeMicroseconds(1300);
-}
-
-void ToiletPaperRoll::waitDelay()
-{
-    delay(5);
-}
-
-void ToiletPaperRoll::changeDirectionDelay()
-{
-    delay(200);
-}
-
-unsigned long ToiletPaperRoll::getSheetTime()
-{
-    // positioning the toilet paper in the right spot
-    while (!_ir2.getValue()) {
-        forwards();
-        waitDelay();
+    switch (dir) {
+    case Direction::FORWARDS:
+        _servo.writeMicroseconds(1650);
+        break;
+    case Direction::STOP:
+        _servo.writeMicroseconds(1500);
+        break;
+    case Direction::BACKWARDS:
+        _servo.writeMicroseconds(1300);
+        break;
     }
-    stop();
-    changeDirectionDelay();
-    while (_ir2.getValue()) {
-        backwards();
-        waitDelay();
-    }
-    stop();
-    changeDirectionDelay();
+    _currentDirection = dir;
+}
+
+void ToiletPaperRoll::getSheetTime(const std::function<void(unsigned long)>& setter)
+{
+    // // positioning the toilet paper in the right spot
+    setPaperInPosition();
 
     // measuring
     unsigned long time = millis();
-    while (!_ir1.getValue()) {
-        forwards();
-        waitDelay();
-    }
-    stop();
-    changeDirectionDelay();
-    time = millis() - time;
+    _actions.emplace_back([this, time, setter](const Action&) {
+        if (_ir1.getValue() == true) {
+            setter(millis() - time);
+            return true;
+        }
+        return false;
+    },
+        ToiletPaperRoll::FORWARDS);
 
-    // retracting
-    while (_ir2.getValue()) {
-        backwards();
-        waitDelay();
-    }
-    stop();
-    changeDirectionDelay();
+    // while (!_ir1.getValue()) {
+    //     forwards();
+    //     waitDelay();
+    // }
+    // stop();
+    // changeDirectionDelay();
+    // time = millis() - time;
 
-    return time;
+    // // retracting
+    // while (_ir2.getValue()) {
+    //     backwards();
+    //     waitDelay();
+    // }
+    // stop();
+    // changeDirectionDelay();
+
+    // return time;
+}
+
+void ToiletPaperRoll::setPaperInPosition(const std::function<void()>& after)
+{
+    _actions.emplace_back([this](const Action&) {
+        return _ir2.getValue() == true;
+    },
+        ToiletPaperRoll::FORWARDS);
+    _actions.emplace_back([this, after](const Action&) {
+        if (_ir2.getValue() == false) {
+            after();
+            return true;
+        }
+        return false;
+    },
+        ToiletPaperRoll::BACKWARDS);
 }
 
 void ToiletPaperRoll::calibrate(int tries)
 {
-    unsigned long time = 0;
+    _calibrationTime = 0;
     for (int i = 0; i < tries; i++) {
-        time += getSheetTime();
+        getSheetTime([this](unsigned long time) {
+            _calibrationTime += time;
+        });
     }
-    _fullOneRollTime = time / tries;
+    setPaperInPosition([this, tries]() {
+        _fullOneRollTime = _calibrationTime / tries;
+        if (_oneRollTime == 0)
+            _oneRollTime = _fullOneRollTime;
+    });
 }
 
 void ToiletPaperRoll::updateRollTime(int tries)
 {
-    unsigned long time = 0;
+    _calibrationTime = 0;
     for (int i = 0; i < tries; i++) {
-        time += getSheetTime();
+        getSheetTime([this](unsigned long time) {
+            _calibrationTime += time;
+        });
     }
-    _oneRollTime = time / tries;
+    setPaperInPosition([this, tries]() {
+        _oneRollTime = _calibrationTime / tries;
+    });
 }
 
 float ToiletPaperRoll::getFullPerimeter() const
@@ -117,15 +133,35 @@ float ToiletPaperRoll::getCurrentPerimeter() const
     return 360.0 * _sensorDistance / angleNow;
 }
 
-float ToiletPaperRoll::getEmptyPerimeter() const {
+float ToiletPaperRoll::getEmptyPerimeter() const
+{
     return _emptyDiameter * M_PI;
 }
 
 float ToiletPaperRoll::percentageLeft(bool adjusted) const
 {
+    if (_fullOneRollTime == 0 || _oneRollTime == 0)
+        return -1;
     float emptyPerim = getEmptyPerimeter();
     float perim = (getCurrentPerimeter() - emptyPerim) / (getFullPerimeter() - emptyPerim) * 100.0;
     if (adjusted)
         return min(100.0, max(perim * 100.0, 0.0));
-    return perim;
+    return perim; // adjusted == false for debug purposes only
+}
+
+void ToiletPaperRoll::update()
+{
+    if (_timeBeforeAction > 0) {
+        _timeBeforeAction -= TOILET_PAPER_MS_TICK;
+        return;
+    }
+    if (_actions.size()) {
+        setDirection(_actions.front().direction);
+        _actions.front().timePassed += TOILET_PAPER_MS_TICK;
+        if (_actions.front().stopCondition(_actions.front())) {
+            _actions.pop_front();
+            _timeBeforeAction = TOILET_PAPER_AFTER_ACTION_WAIT;
+            setDirection(STOP);
+        }
+    }
 }

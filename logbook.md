@@ -115,4 +115,6 @@ Calibration now works a lot better.
 TODO list:
 - Make any servo actions (e.g., calibration) non-blocking so I can easily handle errors (e.g., toilet paper runs out).
 - Add the PIR sensor
-- Work on the server part
+- Work on the server & connectivity part
+
+Made the servo non blocking, need to handle tpr errors next time I work on the project.

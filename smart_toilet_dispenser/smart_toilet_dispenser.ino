@@ -19,6 +19,7 @@ SensorValue pir(5);
 Ticker irUpdateTicker;
 Ticker pirUpdateTicker;
 Ticker printStatesTicker;
+Ticker tprTicker;
 
 ToiletPaperRoll tpr(ir1, ir2);
 
@@ -35,6 +36,7 @@ void setup()
     irUpdateTicker.attach_ms(10, updateIRSensors);
     pirUpdateTicker.attach_ms(500, updatePIRSensors);
     // printStatesTicker.attach_ms(1000, printSensorsStates);
+    tprTicker.attach_ms(TOILET_PAPER_MS_TICK, [](){ tpr.update(); });
 
     delay(500);
     tpr.calibrate();
@@ -59,7 +61,7 @@ void updatePIRSensors()
 
 void loop()
 {
-    delay(10000);
+    delay(60000);
     tpr.updateRollTime();
     Serial.println("percentageLeft:" + String(tpr.percentageLeft(false)));
 }
