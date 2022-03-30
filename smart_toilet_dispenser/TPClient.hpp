@@ -6,6 +6,11 @@
 #include <ArduinoWebsockets.h>
 #include <WiFi.h>
 
+struct CommandHandler {
+    std::function<void(const std::vector<String>& args, ToiletPaperRoll& tpr)> handler;
+    String command;
+};
+
 class TPClient {
 public:
     TPClient(const char* ssid, const char* password, const char* url, ToiletPaperRoll& tpr);

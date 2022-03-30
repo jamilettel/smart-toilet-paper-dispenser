@@ -53,23 +53,6 @@ void ToiletPaperRoll::getSheetTime(const std::function<void(unsigned long)>& set
     },
         ToiletPaperRoll::FORWARDS);
 
-    // while (!_ir1.getValue()) {
-    //     forwards();
-    //     waitDelay();
-    // }
-    // stop();
-    // changeDirectionDelay();
-    // time = millis() - time;
-
-    // // retracting
-    // while (_ir2.getValue()) {
-    //     backwards();
-    //     waitDelay();
-    // }
-    // stop();
-    // changeDirectionDelay();
-
-    // return time;
 }
 
 void ToiletPaperRoll::setPaperInPosition(const std::function<void()>& after)
