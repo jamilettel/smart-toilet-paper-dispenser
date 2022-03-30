@@ -118,3 +118,12 @@ TODO list:
 - Work on the server & connectivity part
 
 Made the servo non blocking, need to handle tpr errors next time I work on the project.
+
+
+## 30/03/2022
+
+Working on connectivity. Goal of the day is to connect to WIFI and then to a websocket server (and send and receive messages).
+
+Managed to connect to my phone's wifi. Couldn't connect to eduroam for some reason. Now looking up websocket clients for esp32.
+
+Found a non blocking package for websockets called ArduinoWebsockets. Started a websocket server on a DigitalOcean droplet, and I can connect to it using the esp32.
