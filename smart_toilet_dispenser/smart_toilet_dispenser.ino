@@ -1,8 +1,8 @@
 #include <Ticker.h>
-#include <WiFi.h>
 
 #include "CircularBuffer.hpp"
 #include "SensorValue.hpp"
+#include "TPClient.hpp"
 #include "ToiletPaperRoll.hpp"
 
 #define IR_BOTTOM_PIN 36
@@ -13,6 +13,7 @@
 
 #define WIFI_SSID "Jamil"
 #define WIFI_PASSWORD "Jamil123"
+#define SERVER_URL "ws://167.71.9.47:3000"
 
 SensorValue ir1(10);
 SensorValue ir2(10);
@@ -20,16 +21,16 @@ SensorValue pir(5);
 
 Ticker irUpdateTicker;
 Ticker pirUpdateTicker;
-Ticker printStatesTicker;
+// Ticker printSensorsStates;
 Ticker tprTicker;
-Ticker wifiTicker;
+Ticker clientTicker;
 
 ToiletPaperRoll tpr(ir1, ir2);
+TPClient tpclient(WIFI_SSID, WIFI_PASSWORD, SERVER_URL, tpr);
 
 void setup()
 {
     Serial.begin(9600);
-    WiFi.begin();
 
     pinMode(LED_BUILTIN, OUTPUT);
     pinMode(IR_BOTTOM_PIN, INPUT);
@@ -39,26 +40,11 @@ void setup()
 
     irUpdateTicker.attach_ms(10, updateIRSensors);
     pirUpdateTicker.attach_ms(500, updatePIRSensors);
-    wifiTicker.attach_ms(500, manageWifi);
     // printStatesTicker.attach_ms(1000, printSensorsStates);
     tprTicker.attach_ms(TOILET_PAPER_MS_TICK, []() { tpr.update(); });
 
     delay(500);
     tpr.calibrate();
-}
-
-void manageWifi()
-{
-    static int counter = 0;
-    Serial.print("Wifi status: ");
-    Serial.println(WiFi.status());
-    if (WiFi.status() != WL_CONNECTED) {
-        if (counter == 0) {
-            WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
-            counter = 120; // 1min
-        }
-        counter--;
-    }
 }
 
 void printSensorsStates()
@@ -80,7 +66,6 @@ void updatePIRSensors()
 
 void loop()
 {
-    delay(60000);
-    // tpr.updateRollTime();
-    Serial.println("percentageLeft:" + String(tpr.percentageLeft(false)));
+    tpclient.update();
+    delay(500);
 }
