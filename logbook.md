@@ -133,3 +133,7 @@ Found a non blocking package for websockets called ArduinoWebsockets. Started a 
 Working on a client wrapper class that handles commands from the server, and sends commands to the server.
 
 Managed to successfully integrate the libraries into the program.
+
+Commands are now easily handleable in the client, just add a method and add it to the list of commands. List of arguments is provided.
+
+All that's remaining now is to handle empty toilet paper roll (& other errors), add a state to the toilet paper.
