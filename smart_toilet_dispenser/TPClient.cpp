@@ -4,6 +4,7 @@
 static CommandHandler handlers[] = {
     { &TPClient::calibrate, "calibrate" },
     { &TPClient::stop, "stop" },
+    { &TPClient::getInfo, "get-info" },
     { &TPClient::continueNormal, "continue" },
 };
 
@@ -20,8 +21,12 @@ static std::vector<String> strsplit(String str, char delimiter = ' ')
         current = next;
         while (next < str.length() && str[next] != delimiter)
             next++;
-        if (next >= str.length() || str[next] != delimiter)
+        if (next >= str.length()) {
+            if (str[next - 1] == delimiter)
+                return words;
+            words.push_back(str.substring(current));
             return words;
+        }
         if (next != current) {
             words.push_back(str.substring(current, next));
             current = next;
@@ -44,7 +49,7 @@ TPClient::TPClient(const char* ssid, const char* password, const char* url, Toil
                 Serial.println("Received empty command");
                 return;
             }
-            for (const auto &handler : handlers) {
+            for (const auto& handler : handlers) {
                 if (handler.command == args[0]) {
                     Serial.println("Executing command: " + args[0]);
                     (this->*handler.handler)(args);
@@ -54,6 +59,9 @@ TPClient::TPClient(const char* ssid, const char* password, const char* url, Toil
             Serial.println("Command not found: " + args[0]);
         }
     });
+    tpr.onStateChange = [this](ToiletPaperRoll::State state) {
+        getInfo(std::vector<String>());
+    };
 }
 
 void TPClient::update()
@@ -61,7 +69,6 @@ void TPClient::update()
     if (!manageWifi() || !manageServerConnection())
         return;
     _ws.poll();
-    _ws.send("calibrate Hello tout le monde    comment ca va??? ");
 }
 
 bool TPClient::manageServerConnection()
@@ -95,4 +102,11 @@ void TPClient::stop(const std::vector<String>& args)
 
 void TPClient::continueNormal(const std::vector<String>& args)
 {
+}
+
+void TPClient::getInfo(const std::vector<String>& args)
+{
+    if (_ws.available()) {
+        _ws.send("state " + ToiletPaperRoll::stateToString(_tpr.getState()));
+    }
 }

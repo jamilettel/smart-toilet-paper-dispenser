@@ -52,7 +52,6 @@ void ToiletPaperRoll::getSheetTime(const std::function<void(unsigned long)>& set
         return false;
     },
         ToiletPaperRoll::FORWARDS);
-
 }
 
 void ToiletPaperRoll::setPaperInPosition(const std::function<void()>& after)
@@ -73,6 +72,9 @@ void ToiletPaperRoll::setPaperInPosition(const std::function<void()>& after)
 
 void ToiletPaperRoll::calibrate(int tries)
 {
+    if (_state == State::MEASURING)
+        return;
+    setState(MEASURING);
     _calibrationTime = 0;
     for (int i = 0; i < tries; i++) {
         getSheetTime([this](unsigned long time) {
@@ -83,11 +85,15 @@ void ToiletPaperRoll::calibrate(int tries)
         _fullOneRollTime = _calibrationTime / tries;
         if (_oneRollTime == 0)
             _oneRollTime = _fullOneRollTime;
+        this->setState(IDLE);
     });
 }
 
 void ToiletPaperRoll::updateRollTime(int tries)
 {
+    if (_state == State::MEASURING)
+        return;
+    setState(MEASURING);
     _calibrationTime = 0;
     for (int i = 0; i < tries; i++) {
         getSheetTime([this](unsigned long time) {
@@ -96,6 +102,7 @@ void ToiletPaperRoll::updateRollTime(int tries)
     }
     setPaperInPosition([this, tries]() {
         _oneRollTime = _calibrationTime / tries;
+        setState(IDLE);
     });
 }
 
@@ -147,4 +154,35 @@ void ToiletPaperRoll::update()
             setDirection(STOP);
         }
     }
+}
+
+void ToiletPaperRoll::setState(State state)
+{
+    if (_state != state) {
+        _state = state;
+        onStateChange(state);
+    }
+}
+
+String ToiletPaperRoll::stateToString(State state)
+{
+    switch (state) {
+    case State::EMPTY:
+        return "empty";
+    case State::EXPANDED:
+        return "expanded";
+    case State::IDLE:
+        return "idle";
+    case State::MEASURING:
+        return "measuring";
+    case State::STOPPED:
+        return "stopped";
+    default:
+        return "unknown";
+    }
+}
+
+ToiletPaperRoll::State ToiletPaperRoll::getState() const
+{
+    return _state;
 }
