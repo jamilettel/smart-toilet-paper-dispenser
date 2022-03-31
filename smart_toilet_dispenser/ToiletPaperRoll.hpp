@@ -27,13 +27,14 @@ private:
     struct Action {
         Action(
             const std::function<bool(const Action&)>& stopCondition,
-            Direction direction);
+            Direction direction, int timeout = -1);
         ~Action() = default;
         Action(const Action&) = delete;
         Action& operator=(const Action&) = delete;
 
         const Direction direction;
         float timePassed = 0;
+        int timeout; // in milliseconds
         const std::function<const bool(Action&)> stopCondition;
     };
 

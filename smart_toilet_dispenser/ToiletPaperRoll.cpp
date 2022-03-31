@@ -2,9 +2,11 @@
 
 ToiletPaperRoll::Action::Action(
     const std::function<bool(const Action&)>& stpCondition,
-    Direction dir)
+    Direction dir,
+    int timeoutMs)
     : stopCondition(stpCondition)
     , direction(dir)
+    , timeout(timeoutMs)
 {
 }
 
@@ -51,7 +53,7 @@ void ToiletPaperRoll::getSheetTime(const std::function<void(unsigned long)>& set
         }
         return false;
     },
-        ToiletPaperRoll::FORWARDS);
+        ToiletPaperRoll::FORWARDS, 10000);
 }
 
 void ToiletPaperRoll::setPaperInPosition(const std::function<void()>& after)
@@ -59,7 +61,7 @@ void ToiletPaperRoll::setPaperInPosition(const std::function<void()>& after)
     _actions.emplace_back([this](const Action&) {
         return _ir2.getValue() == true;
     },
-        ToiletPaperRoll::FORWARDS);
+        ToiletPaperRoll::FORWARDS, 10000);
     _actions.emplace_back([this, after](const Action&) {
         if (_ir2.getValue() == false) {
             after();
@@ -67,7 +69,7 @@ void ToiletPaperRoll::setPaperInPosition(const std::function<void()>& after)
         }
         return false;
     },
-        ToiletPaperRoll::BACKWARDS);
+        ToiletPaperRoll::BACKWARDS, 10000);
 }
 
 void ToiletPaperRoll::calibrate(int tries)
@@ -146,12 +148,17 @@ void ToiletPaperRoll::update()
         return;
     }
     if (_actions.size()) {
-        setDirection(_actions.front().direction);
-        _actions.front().timePassed += TOILET_PAPER_MS_TICK;
-        if (_actions.front().stopCondition(_actions.front())) {
+        auto &action = _actions.front();
+        setDirection(action.direction);
+        action.timePassed += TOILET_PAPER_MS_TICK;
+        if (action.stopCondition(action)) {
             _actions.pop_front();
             _timeBeforeAction = TOILET_PAPER_AFTER_ACTION_WAIT;
             setDirection(STOP);
+        } else if (action.timeout != -1 && action.timePassed > action.timeout) {
+            _actions.clear();
+            setDirection(STOP);
+            setState(State::EMPTY);
         }
     }
 }

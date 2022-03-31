@@ -139,3 +139,5 @@ Commands are now easily handleable in the client, just add a method and add it t
 All that's remaining now is to handle empty toilet paper roll (& other errors), add a state to the toilet paper.
 
 State added, now working on servo timeout.
+
+Added timeout, this is enough work for today. Remaining is the server, the integration of the commands in the arduino, and the PIR sensor.
