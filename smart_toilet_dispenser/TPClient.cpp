@@ -2,22 +2,9 @@
 #include <vector>
 
 static CommandHandler handlers[] = {
-    { [](const std::vector<String>& args, ToiletPaperRoll& tpr) {
-
-     },
-        "calibrate" },
-    { [](const std::vector<String>& args, ToiletPaperRoll& tpr) {
-
-     },
-        "get-percentage-left" },
-    { [](const std::vector<String>& args, ToiletPaperRoll& tpr) {
-
-     },
-        "stop" },
-    { [](const std::vector<String>& args, ToiletPaperRoll& tpr) {
-
-     },
-        "continue" },
+    { &TPClient::calibrate, "calibrate" },
+    { &TPClient::stop, "stop" },
+    { &TPClient::continueNormal, "continue" },
 };
 
 static std::vector<String> strsplit(String str, char delimiter = ' ')
@@ -50,11 +37,21 @@ TPClient::TPClient(const char* ssid, const char* password, const char* url, Toil
     , _tpr(tpr)
 {
     WiFi.begin();
-    _ws.onMessage([](websockets::WebsocketsMessage message) {
+    _ws.onMessage([this](websockets::WebsocketsMessage message) {
         if (message.isText()) {
-            auto command = strsplit(message.c_str());
-            for (const auto& str : command) {
+            auto args = strsplit(message.c_str());
+            if (args.size() == 0) {
+                Serial.println("Received empty command");
+                return;
             }
+            for (const auto &handler : handlers) {
+                if (handler.command == args[0]) {
+                    Serial.println("Executing command: " + args[0]);
+                    (this->*handler.handler)(args);
+                    return;
+                }
+            }
+            Serial.println("Command not found: " + args[0]);
         }
     });
 }
@@ -64,7 +61,7 @@ void TPClient::update()
     if (!manageWifi() || !manageServerConnection())
         return;
     _ws.poll();
-    _ws.send("Hello tout le monde    comment ca va??? ");
+    _ws.send("calibrate Hello tout le monde    comment ca va??? ");
 }
 
 bool TPClient::manageServerConnection()
@@ -85,4 +82,17 @@ bool TPClient::manageWifi()
         }
         _wifiCounter--;
     }
+}
+
+void TPClient::calibrate(const std::vector<String>& args)
+{
+    Serial.println("Calibrating, beep boop.");
+}
+
+void TPClient::stop(const std::vector<String>& args)
+{
+}
+
+void TPClient::continueNormal(const std::vector<String>& args)
+{
 }

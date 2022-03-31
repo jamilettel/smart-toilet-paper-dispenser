@@ -6,11 +6,6 @@
 #include <ArduinoWebsockets.h>
 #include <WiFi.h>
 
-struct CommandHandler {
-    std::function<void(const std::vector<String>& args, ToiletPaperRoll& tpr)> handler;
-    String command;
-};
-
 class TPClient {
 public:
     TPClient(const char* ssid, const char* password, const char* url, ToiletPaperRoll& tpr);
@@ -19,6 +14,10 @@ public:
     ~TPClient() = default;
 
     void update();
+
+    void calibrate(const std::vector<String>& args);
+    void continueNormal(const std::vector<String>& args);
+    void stop(const std::vector<String>& args);
 
 private:
     // returns true if wifi is connected
@@ -33,6 +32,11 @@ private:
     websockets::WebsocketsClient _ws;
     int _wifiCounter = 0;
     ToiletPaperRoll& _tpr;
+};
+
+struct CommandHandler {
+    void (TPClient::*handler)(const std::vector<String>& args);
+    String command;
 };
 
 #endif // TPCLIENT_HPP_
