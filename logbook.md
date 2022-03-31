@@ -137,3 +137,5 @@ Managed to successfully integrate the libraries into the program.
 Commands are now easily handleable in the client, just add a method and add it to the list of commands. List of arguments is provided.
 
 All that's remaining now is to handle empty toilet paper roll (& other errors), add a state to the toilet paper.
+
+State added, now working on servo timeout.
