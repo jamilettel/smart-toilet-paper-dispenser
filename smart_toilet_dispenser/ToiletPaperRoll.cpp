@@ -91,7 +91,7 @@ void ToiletPaperRoll::calibrate(int tries)
     setPaperInPosition([this, tries]() {
         _fullOneRollTime = _calibrationTime / tries;
         _oneRollTime = _fullOneRollTime;
-        this->setState(WORKING);
+        setState(WORKING);
     });
 }
 
@@ -152,18 +152,22 @@ void ToiletPaperRoll::update()
         return;
     }
     if (_actions.size()) {
-        auto& action = _actions.front();
-        setDirection(action.direction);
-        action.timePassed += TOILET_PAPER_MS_TICK;
-        if (action.stopCondition(action)) {
+        setDirection(_actions.front().direction);
+        _actions.front().timePassed += TOILET_PAPER_MS_TICK;
+        if (_actions.front().stopCondition(_actions.front())) {
             _actions.pop_front();
             _timeBeforeAction = TOILET_PAPER_AFTER_ACTION_WAIT;
             setDirection(STOP);
-        } else if (action.timeout != -1 && action.timePassed > action.timeout) {
+        } else if (_actions.front().timeout != -1 && _actions.front().timePassed > _actions.front().timeout) {
             _actions.clear();
             setDirection(STOP);
             setState(State::EMPTY);
         }
+    } else if (getState() == WORKING && _ir1.getValue() == false) {
+        _actions.emplace_back([this](const Action&) {
+            return _ir1.getValue() == true;
+        },
+            FORWARDS, 20000);
     }
 }
 
@@ -224,4 +228,9 @@ void ToiletPaperRoll::setFullOneSheetTime(unsigned long time)
     if (_oneRollTime && _fullOneRollTime) {
         setState(WORKING);
     }
+}
+
+void ToiletPaperRoll::clearActions()
+{
+    _actions.clear();
 }

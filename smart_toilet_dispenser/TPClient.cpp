@@ -61,7 +61,7 @@ TPClient::TPClient(const char* ssid, const char* password, const char* url, Toil
             Serial.println("Command not found: " + args[0]);
         }
     });
-    tpr.onStateChange = [this](ToiletPaperRoll::State state) {
+    tpr.onStateChange = [this](ToiletPaperRoll::State) {
         sendState();
     };
 }
@@ -120,6 +120,7 @@ void TPClient::stop(const std::vector<String>& args)
 
 void TPClient::continueNormal(const std::vector<String>& args)
 {
+    _tpr.clearActions();
     _tpr.setState(ToiletPaperRoll::WORKING);
 }
 

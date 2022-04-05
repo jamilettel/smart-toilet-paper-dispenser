@@ -7,7 +7,7 @@ const saveValueInDb: wsFunction = (_ws, args) => {
         return false
     const key = args[1]
     const value = args[2]
-    if (value == tprDatabase.values[key])
+    if (tprDatabase.values[key] === value)
         return false
     tprDatabase.values[key] = value
     return true

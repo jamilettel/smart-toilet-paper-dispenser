@@ -69,6 +69,8 @@ public:
 
     void setState(State state);
 
+    void clearActions();
+
 private:
     void setDirection(Direction dir);
 
