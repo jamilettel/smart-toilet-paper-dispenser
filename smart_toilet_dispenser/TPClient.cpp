@@ -1,11 +1,12 @@
 #include "TPClient.hpp"
+#include "settings.hpp"
 #include <vector>
 
 static CommandHandler handlers[] = {
     { &TPClient::calibrate, "calibrate" },
     { &TPClient::stop, "stop" },
-    { &TPClient::getInfo, "get-info" },
-    { &TPClient::continueNormal, "continue" },
+    { &TPClient::continueNormal, "start" },
+    { &TPClient::measure, "measure" },
 };
 
 static std::vector<String> strsplit(String str, char delimiter = ' ')
@@ -60,7 +61,7 @@ TPClient::TPClient(const char* ssid, const char* password, const char* url, Toil
         }
     });
     tpr.onStateChange = [this](ToiletPaperRoll::State state) {
-        getInfo(std::vector<String>());
+        sendState();
     };
 }
 
@@ -73,40 +74,58 @@ void TPClient::update()
 
 bool TPClient::manageServerConnection()
 {
-    if (_ws.available())
+    static int timer = 0;
+    if (_ws.available()) {
+        if (timer == 0) {
+            timer = 30;
+            sendState();
+        }
         return true;
+    }
     return _ws.connect(_url);
 }
 
 bool TPClient::manageWifi()
 {
-    Serial.print("Wifi status: ");
+    Serial.print("WiFi status: ");
     Serial.println(WiFi.status());
     if (WiFi.status() != WL_CONNECTED) {
+        digitalWrite(LED_BUILTIN, LOW);
         if (_wifiCounter == 0) {
             WiFi.begin(_ssid, _password);
             _wifiCounter = 60; // 30s
         }
         _wifiCounter--;
     }
+    digitalWrite(LED_BUILTIN, HIGH);
 }
 
 void TPClient::calibrate(const std::vector<String>& args)
 {
-    Serial.println("Calibrating, beep boop.");
+    _tpr.calibrate();
 }
 
 void TPClient::stop(const std::vector<String>& args)
 {
+    _tpr.setState(ToiletPaperRoll::STOPPED);
 }
 
 void TPClient::continueNormal(const std::vector<String>& args)
 {
+    _tpr.setState(ToiletPaperRoll::WORKING);
 }
 
-void TPClient::getInfo(const std::vector<String>& args)
+void TPClient::measure(const std::vector<String>& args)
+{
+    _tpr.updateRollTime();
+}
+
+void TPClient::sendState()
 {
     if (_ws.available()) {
-        _ws.send("state " + ToiletPaperRoll::stateToString(_tpr.getState()));
+        _ws.send("status " + ToiletPaperRoll::stateToString(_tpr.getState()));
+        _ws.send("set-percentage " + String(_tpr.percentageLeft()));
+        _ws.send("save one-sheet-time " + String(_tpr.getOneSheetTime()));
+        _ws.send("save full-one-sheet-time " + String(_tpr.getFullOneSheetTime()));
     }
 }

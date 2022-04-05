@@ -18,6 +18,8 @@ wss.on('connection', (ws) => {
 
     ws.onmessage = (message) => {
 
+        console.log(message.data)
+
         const args = (message.data as string).trim().split(' ')
         if (args.length === 0)
             return

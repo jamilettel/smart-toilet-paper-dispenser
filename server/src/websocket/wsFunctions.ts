@@ -26,7 +26,7 @@ export const setStatus: wsFunction = (_ws, args) => {
     if (args.length !== 2)
         return false
     const status = args[1]
-    if (status === 'disconnected' || status === 'calibrating' || status === 'error' || status === 'working')
+    if (status === 'disconnected' || status === 'calibrating' || status === 'error' || status === 'working' || status === 'stopped')
         tprDatabase.status = status
     return true
 }
@@ -54,7 +54,15 @@ const calibrate: wsFunction = (_ws, _args) => {
         if (client.subscribed === false)
             client.send('calibrate')
     })
-    return true
+    return false
+}
+
+const measure: wsFunction = (_ws, _args) => {
+    wss.clients.forEach(client => {
+        if (client.subscribed === false)
+            client.send('measure')
+    })
+    return false
 }
 
 const stopTpd: wsFunction = (_ws, _args) => {
@@ -62,7 +70,7 @@ const stopTpd: wsFunction = (_ws, _args) => {
         if (client.subscribed === false)
             client.send('stop')
     })
-    return true
+    return false
 }
 
 const startTpd: wsFunction = (_ws, _args) => {
@@ -70,7 +78,7 @@ const startTpd: wsFunction = (_ws, _args) => {
         if (client.subscribed === false)
             client.send('start')
     })
-    return true
+    return false
 }
 
 export default [
@@ -85,6 +93,7 @@ export default [
     { func: subscribe, command: 'subscribe' },
     { func: getDatabase, command: 'get-database' },
     { func: calibrate, command: 'calibrate' },
+    { func: measure, command: 'measure' },
     { func: stopTpd, command: 'stop' },
     { func: startTpd, command: 'start' },
 

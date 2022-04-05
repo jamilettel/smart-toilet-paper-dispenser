@@ -42,8 +42,7 @@ public:
     enum State {
         MEASURING, // calibrating or measuring
         EMPTY, // Toilet paper roll is empty, or error
-        EXPANDED, // When user is in the room
-        IDLE, // Retracted, waiting for user to get in the room
+        WORKING, // When user is in the room
         STOPPED, // Ordered to stop by user, will go back to normal when user leaves
     };
 
@@ -63,6 +62,11 @@ public:
     std::function<void(State state)> onStateChange = [](State _state) {};
     State getState() const;
 
+    unsigned long getOneSheetTime() const;
+    unsigned long getFullOneSheetTime() const;
+
+    void setState(State state);
+
 private:
     void setDirection(Direction dir);
 
@@ -71,8 +75,6 @@ private:
     float getFullPerimeter() const;
     float getCurrentPerimeter() const;
     float getEmptyPerimeter() const;
-
-    void setState(State state);
 
 private:
     Servo _servo;
@@ -92,7 +94,9 @@ private:
     unsigned long _timeBeforeAction = 0;
 
     unsigned long _calibrationTime = 0;
-    State _state = STOPPED;
+    bool _resetTime = true;
+    unsigned long _sheetTime = 0;
+    State _state = EMPTY;
 };
 
 #endif // TOILET_PAPER_ROLL_HPP

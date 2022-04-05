@@ -15,10 +15,12 @@ public:
 
     void update();
 
+    void sendState();
+
     void calibrate(const std::vector<String>& args);
     void continueNormal(const std::vector<String>& args);
     void stop(const std::vector<String>& args);
-    void getInfo(const std::vector<String>& args);
+    void measure(const std::vector<String>& args);
 
 private:
     // returns true if wifi is connected

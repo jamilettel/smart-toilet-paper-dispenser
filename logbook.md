@@ -122,28 +122,47 @@ Made the servo non blocking, need to handle tpr errors next time I work on the p
 
 ## 30/03/2022
 
-Working on connectivity. Goal of the day is to connect to WIFI and then to a websocket server (and send and receive messages).
+Working on connectivity. 
+Goal of the day is to connect to WIFI and then to a websocket server (and send and receive messages).
 
-Managed to connect to my phone's wifi. Couldn't connect to eduroam for some reason. Now looking up websocket clients for esp32.
+Managed to connect to my phone's wifi. 
+Couldn't connect to eduroam for some reason. 
+Now looking up websocket clients for esp32.
 
-Found a non blocking package for websockets called ArduinoWebsockets. Started a websocket server on a DigitalOcean droplet, and I can connect to it using the esp32.
+Found a non blocking package for websockets called ArduinoWebsockets. 
+Started a websocket server on a DigitalOcean droplet, and I can connect to it using the esp32.
 
 ## 31/03/2022
 
-Working on a client wrapper class that handles commands from the server, and sends commands to the server.
+Working on a client wrapper class that handles commands from the server, 
+and sends commands to the server.
 
 Managed to successfully integrate the libraries into the program.
 
-Commands are now easily handleable in the client, just add a method and add it to the list of commands. List of arguments is provided.
+Commands are now easily handleable in the client, 
+just add a method and add it to the list of commands. 
+List of arguments is provided.
 
-All that's remaining now is to handle empty toilet paper roll (& other errors), add a state to the toilet paper.
+All that's remaining now is to handle empty toilet paper roll (& other errors), 
+add a state to the toilet paper.
 
 State added, now working on servo timeout.
 
-Added timeout, this is enough work for today. Remaining is the server, the integration of the commands in the arduino, and the PIR sensor.
+Added timeout, this is enough work for today. 
+Remaining is the server, the integration of the commands in the arduino, and the PIR sensor.
 
 
 ## 05/04/2022
 
-My plan for today is to finish the websocket server and finish the connection between the server and the IoT device. I also need to add the PIR sensor the device.
-For now, I need to figure out what calls I need to add to transmit the data, and then add them to both the server and the IoT device.
+My plan for today is to finish the websocket server and finish the connection between the server and the IoT device. 
+I also need to add the PIR sensor the device.
+For now, I need to figure out what calls I need to add to transmit the data, 
+and then add them to both the server and the IoT device.
+
+Decided not to go with http requests at all, everything will go through the websockets. 
+Added IoT commands and WebApp commands. 
+This way, the WebApp will be notified as soon as possible whenever a change happens in the state of the device.
+
+Before adding the code to the IoT device, I wanted to add the PIR sensor.
+I tried adding it for a few hours, it did not work, so I abandonned the idea of adding the PIR sensor.
+Will continue working on the IoT interactions with the server.

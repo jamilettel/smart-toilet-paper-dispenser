@@ -45,10 +45,14 @@ void ToiletPaperRoll::getSheetTime(const std::function<void(unsigned long)>& set
     setPaperInPosition();
 
     // measuring
-    unsigned long time = millis();
-    _actions.emplace_back([this, time, setter](const Action&) {
+    _actions.emplace_back([this, setter](const Action&) {
+        if (_resetTime == true) {
+            _resetTime = false;
+            _sheetTime = millis();
+        }
         if (_ir1.getValue() == true) {
-            setter(millis() - time);
+            setter(millis() - _sheetTime);
+            _resetTime = true;
             return true;
         }
         return false;
@@ -85,9 +89,8 @@ void ToiletPaperRoll::calibrate(int tries)
     }
     setPaperInPosition([this, tries]() {
         _fullOneRollTime = _calibrationTime / tries;
-        if (_oneRollTime == 0)
-            _oneRollTime = _fullOneRollTime;
-        this->setState(IDLE);
+        _oneRollTime = _fullOneRollTime;
+        this->setState(WORKING);
     });
 }
 
@@ -104,7 +107,7 @@ void ToiletPaperRoll::updateRollTime(int tries)
     }
     setPaperInPosition([this, tries]() {
         _oneRollTime = _calibrationTime / tries;
-        setState(IDLE);
+        setState(WORKING);
     });
 }
 
@@ -148,7 +151,7 @@ void ToiletPaperRoll::update()
         return;
     }
     if (_actions.size()) {
-        auto &action = _actions.front();
+        auto& action = _actions.front();
         setDirection(action.direction);
         action.timePassed += TOILET_PAPER_MS_TICK;
         if (action.stopCondition(action)) {
@@ -175,13 +178,11 @@ String ToiletPaperRoll::stateToString(State state)
 {
     switch (state) {
     case State::EMPTY:
-        return "empty";
-    case State::EXPANDED:
-        return "expanded";
-    case State::IDLE:
-        return "idle";
+        return "error";
+    case State::WORKING:
+        return "working";
     case State::MEASURING:
-        return "measuring";
+        return "calibrating";
     case State::STOPPED:
         return "stopped";
     default:
@@ -192,4 +193,14 @@ String ToiletPaperRoll::stateToString(State state)
 ToiletPaperRoll::State ToiletPaperRoll::getState() const
 {
     return _state;
+}
+
+unsigned long ToiletPaperRoll::getOneSheetTime() const
+{
+    return _oneRollTime;
+}
+
+unsigned long ToiletPaperRoll::getFullOneSheetTime() const
+{
+    return _fullOneRollTime;
 }

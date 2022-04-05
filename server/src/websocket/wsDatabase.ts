@@ -2,7 +2,7 @@ import * as fs from 'fs'
 
 export let tprDatabase: {
     values: any,
-    status: 'disconnected' | 'calibrating' | 'error' | 'working',
+    status: 'disconnected' | 'calibrating' | 'error' | 'working' | 'stopped',
     percentageLeft: number,
 } = {
     values: {},
