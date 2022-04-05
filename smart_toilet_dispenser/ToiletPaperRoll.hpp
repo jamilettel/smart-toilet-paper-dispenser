@@ -53,7 +53,7 @@ public:
     void calibrate(int tries = 5);
     void updateRollTime(int tries = 5);
 
-    void setPaperInPosition(const std::function<void()>& after = []() {});
+    void setPaperInPosition(const std::function<void()>& after = []() {}, int timeout = 10000);
 
     float percentageLeft(bool adjusted = true) const;
 

@@ -61,7 +61,7 @@ void ToiletPaperRoll::getSheetTime(const std::function<void(unsigned long)>& set
         ToiletPaperRoll::FORWARDS, 10000);
 }
 
-void ToiletPaperRoll::setPaperInPosition(const std::function<void()>& after)
+void ToiletPaperRoll::setPaperInPosition(const std::function<void()>& after, int timeout)
 {
     _actions.emplace_back([this](const Action&) {
         return _ir2.getValue() == true;
@@ -74,7 +74,7 @@ void ToiletPaperRoll::setPaperInPosition(const std::function<void()>& after)
         }
         return false;
     },
-        ToiletPaperRoll::BACKWARDS, 10000);
+        ToiletPaperRoll::BACKWARDS, timeout);
 }
 
 void ToiletPaperRoll::calibrate(int tries)
@@ -178,7 +178,7 @@ void ToiletPaperRoll::setState(State state)
         onStateChange(state);
         if (state == STOPPED) {
             _actions.clear();
-            setPaperInPosition();
+            setPaperInPosition([](){}, 20000);
         }
     }
 }

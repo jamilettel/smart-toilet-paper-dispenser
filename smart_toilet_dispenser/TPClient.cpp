@@ -68,6 +68,16 @@ TPClient::TPClient(const char* ssid, const char* password, const char* url, Toil
 
 void TPClient::update()
 {
+    static bool blink = false;
+    if (WiFi.status() != WL_CONNECTED) {
+        digitalWrite(LED_BUILTIN, LOW);
+    } else if (!_ws.available()) {
+        digitalWrite(LED_BUILTIN, blink ? HIGH : LOW);
+        blink = !blink;
+    } else {
+        digitalWrite(LED_BUILTIN, HIGH);
+    }
+
     if (!manageWifi() || !manageServerConnection())
         return;
     _ws.poll();
@@ -98,14 +108,12 @@ bool TPClient::manageWifi()
     Serial.print("WiFi status: ");
     Serial.println(WiFi.status());
     if (WiFi.status() != WL_CONNECTED) {
-        digitalWrite(LED_BUILTIN, LOW);
         if (_wifiCounter == 0) {
             WiFi.begin(_ssid, _password);
             _wifiCounter = 60; // 30s
         }
         _wifiCounter--;
     }
-    digitalWrite(LED_BUILTIN, HIGH);
 }
 
 void TPClient::calibrate(const std::vector<String>& args)
