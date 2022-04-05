@@ -141,3 +141,8 @@ All that's remaining now is to handle empty toilet paper roll (& other errors), 
 State added, now working on servo timeout.
 
 Added timeout, this is enough work for today. Remaining is the server, the integration of the commands in the arduino, and the PIR sensor.
+
+
+## 05/04/2022
+
+My plan for today is to finish the websocket server and finish the connection between the server and the IoT device. I also need to add the PIR sensor the device.
