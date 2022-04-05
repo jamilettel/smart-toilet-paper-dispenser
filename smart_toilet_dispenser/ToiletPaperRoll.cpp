@@ -43,6 +43,7 @@ void ToiletPaperRoll::getSheetTime(const std::function<void(unsigned long)>& set
 {
     // // positioning the toilet paper in the right spot
     setPaperInPosition();
+    _resetTime = true;
 
     // measuring
     _actions.emplace_back([this, setter](const Action&) {
@@ -137,10 +138,10 @@ float ToiletPaperRoll::percentageLeft(bool adjusted) const
 {
     if (_fullOneRollTime == 0 || _oneRollTime == 0)
         return -1;
-    float emptyPerim = getEmptyPerimeter();
-    float perim = (getCurrentPerimeter() - emptyPerim) / (getFullPerimeter() - emptyPerim) * 100.0;
+    double emptyPerim = getEmptyPerimeter();
+    double perim = (getCurrentPerimeter() - emptyPerim) / (getFullPerimeter() - emptyPerim) * 100.0;
     if (adjusted)
-        return min(100.0, max(perim * 100.0, 0.0));
+        return min(100.0, max(perim, 0.0));
     return perim; // adjusted == false for debug purposes only
 }
 
@@ -171,6 +172,10 @@ void ToiletPaperRoll::setState(State state)
     if (_state != state) {
         _state = state;
         onStateChange(state);
+        if (state == STOPPED) {
+            _actions.clear();
+            setPaperInPosition();
+        }
     }
 }
 
@@ -203,4 +208,20 @@ unsigned long ToiletPaperRoll::getOneSheetTime() const
 unsigned long ToiletPaperRoll::getFullOneSheetTime() const
 {
     return _fullOneRollTime;
+}
+
+void ToiletPaperRoll::setOneSheetTime(unsigned long time)
+{
+    _oneRollTime = time;
+    if (_oneRollTime && _fullOneRollTime) {
+        setState(WORKING);
+    }
+}
+
+void ToiletPaperRoll::setFullOneSheetTime(unsigned long time)
+{
+    _fullOneRollTime = time;
+    if (_oneRollTime && _fullOneRollTime) {
+        setState(WORKING);
+    }
 }

@@ -7,6 +7,7 @@ static CommandHandler handlers[] = {
     { &TPClient::stop, "stop" },
     { &TPClient::continueNormal, "start" },
     { &TPClient::measure, "measure" },
+    { &TPClient::setValue, "value" },
 };
 
 static std::vector<String> strsplit(String str, char delimiter = ' ')
@@ -75,10 +76,17 @@ void TPClient::update()
 bool TPClient::manageServerConnection()
 {
     static int timer = 0;
+    static bool gotSettings = false;
+
     if (_ws.available()) {
-        if (timer == 0) {
+        if (--timer == 0) {
             timer = 30;
             sendState();
+        }
+        if (!gotSettings) {
+            _ws.send("get full-one-sheet-time");
+            _ws.send("get one-sheet-time");
+            gotSettings = true;
         }
         return true;
     }
@@ -120,12 +128,28 @@ void TPClient::measure(const std::vector<String>& args)
     _tpr.updateRollTime();
 }
 
+void TPClient::setValue(const std::vector<String>& args)
+{
+    if (args.size() != 3)
+        return;
+    if (!args.at(1).compareTo("one-sheet-time")) {
+        long long ost = atoll(args.at(2).c_str());
+        _tpr.setOneSheetTime(ost);
+    } else if (!args.at(1).compareTo("full-one-sheet-time")) {
+        long long fost = atoll(args.at(2).c_str());
+        _tpr.setFullOneSheetTime(fost);
+    }
+}
+
 void TPClient::sendState()
 {
     if (_ws.available()) {
         _ws.send("status " + ToiletPaperRoll::stateToString(_tpr.getState()));
-        _ws.send("set-percentage " + String(_tpr.percentageLeft()));
-        _ws.send("save one-sheet-time " + String(_tpr.getOneSheetTime()));
-        _ws.send("save full-one-sheet-time " + String(_tpr.getFullOneSheetTime()));
+        float percentage = _tpr.percentageLeft();
+        if (percentage >= 0) {
+            _ws.send("set-percentage " + String(percentage));
+            _ws.send("save one-sheet-time " + String(_tpr.getOneSheetTime()));
+            _ws.send("save full-one-sheet-time " + String(_tpr.getFullOneSheetTime()));
+        }
     }
 }

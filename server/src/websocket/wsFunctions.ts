@@ -7,6 +7,8 @@ const saveValueInDb: wsFunction = (_ws, args) => {
         return false
     const key = args[1]
     const value = args[2]
+    if (value == tprDatabase.values[key])
+        return false
     tprDatabase.values[key] = value
     return true
 }
@@ -19,7 +21,7 @@ const getValue: wsFunction = (ws, args) => {
     if (tprDatabase.values[key] === undefined)
         return false
     ws.send(`value ${key} ${value}`)
-    return true
+    return false
 }
 
 export const setStatus: wsFunction = (_ws, args) => {

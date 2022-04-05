@@ -64,6 +64,8 @@ public:
 
     unsigned long getOneSheetTime() const;
     unsigned long getFullOneSheetTime() const;
+    void setOneSheetTime(unsigned long time);
+    void setFullOneSheetTime(unsigned long time);
 
     void setState(State state);
 
