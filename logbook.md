@@ -146,3 +146,4 @@ Added timeout, this is enough work for today. Remaining is the server, the integ
 ## 05/04/2022
 
 My plan for today is to finish the websocket server and finish the connection between the server and the IoT device. I also need to add the PIR sensor the device.
+For now, I need to figure out what calls I need to add to transmit the data, and then add them to both the server and the IoT device.
