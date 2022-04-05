@@ -16,7 +16,7 @@
     "@typescript-eslint"
   ],
   "rules": {
-    "semi": ["error", "always"],
+    "semi": ["error", "never"],
     "@typescript-eslint/no-inferrable-types": 0,
     "@typescript-eslint/no-explicit-any": 0,
     "@typescript-eslint/no-non-null-assertion": 0,

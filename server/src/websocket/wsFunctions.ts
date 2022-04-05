@@ -1,7 +1,8 @@
 import { wsFunction } from '@/websocket/wsTypes'
 import { tprDatabase } from '@/websocket/wsDatabase'
+import { wss } from '@/websocket/wsSetup'
 
-export const saveValueInDb: wsFunction = (_ws, args) => {
+const saveValueInDb: wsFunction = (_ws, args) => {
     if (args.length !== 3)
         return false
     const key = args[1]
@@ -10,7 +11,7 @@ export const saveValueInDb: wsFunction = (_ws, args) => {
     return true
 }
 
-export const getValue: wsFunction = (ws, args) => {
+const getValue: wsFunction = (ws, args) => {
     if (args.length !== 2)
         return false
     const key = args[1]
@@ -25,12 +26,12 @@ export const setStatus: wsFunction = (_ws, args) => {
     if (args.length !== 2)
         return false
     const status = args[1]
-    if (status == 'disconnected' || status == 'calibrating' || status == 'error' || status == 'working')
+    if (status === 'disconnected' || status === 'calibrating' || status === 'error' || status === 'working')
         tprDatabase.status = status
     return true
 }
 
-export const setPercentage: wsFunction = (_ws, args) => {
+const setPercentage: wsFunction = (_ws, args) => {
     if (args.length !== 2)
         return false
     const percentage = parseFloat(args[1])
@@ -38,7 +39,7 @@ export const setPercentage: wsFunction = (_ws, args) => {
     return true
 }
 
-export const subscribe: wsFunction = (ws, _args) => {
+const subscribe: wsFunction = (ws, _args) => {
     ws.subscribed = true
     return false
 }
@@ -46,6 +47,30 @@ export const subscribe: wsFunction = (ws, _args) => {
 export const getDatabase: wsFunction = (ws, _args) => {
     ws.send(JSON.stringify(tprDatabase))
     return false
+}
+
+const calibrate: wsFunction = (_ws, _args) => {
+    wss.clients.forEach(client => {
+        if (client.subscribed === false)
+            client.send('calibrate')
+    })
+    return true
+}
+
+const stopTpd: wsFunction = (_ws, _args) => {
+    wss.clients.forEach(client => {
+        if (client.subscribed === false)
+            client.send('stop')
+    })
+    return true
+}
+
+const startTpd: wsFunction = (_ws, _args) => {
+    wss.clients.forEach(client => {
+        if (client.subscribed === false)
+            client.send('start')
+    })
+    return true
 }
 
 export default [
@@ -59,5 +84,8 @@ export default [
     // WebApp commands
     { func: subscribe, command: 'subscribe' },
     { func: getDatabase, command: 'get-database' },
+    { func: calibrate, command: 'calibrate' },
+    { func: stopTpd, command: 'stop' },
+    { func: startTpd, command: 'start' },
 
 ] as { func: wsFunction, command: string }[]
