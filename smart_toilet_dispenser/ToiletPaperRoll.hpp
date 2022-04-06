@@ -16,6 +16,8 @@
 #define TOILET_PAPER_MS_TICK 5
 #define TOILET_PAPER_AFTER_ACTION_WAIT 200
 
+#define TOILET_PAPER_MEASURE_AFTER 900000 // 15 minutes
+
 class ToiletPaperRoll {
 private:
     enum Direction {
@@ -53,7 +55,8 @@ public:
     void calibrate(int tries = 5);
     void updateRollTime(int tries = 5);
 
-    void setPaperInPosition(const std::function<void()>& after = []() {}, int timeout = 10000);
+    void setPaperInPosition(
+        const std::function<void()>& after = []() {}, int timeout = 10000);
 
     float percentageLeft(bool adjusted = true) const;
 
@@ -95,12 +98,14 @@ private:
 
     const float _sensorDistance = 102; // distance between the sensors is 102: DO NOT CHANGE
     std::list<Action> _actions;
-    unsigned long _timeBeforeAction = 0;
+    long _timeBeforeAction = 0;
 
     unsigned long _calibrationTime = 0;
     bool _resetTime = true;
     unsigned long _sheetTime = 0;
     State _state = EMPTY;
+
+    long _measureIn = 0;
 };
 
 #endif // TOILET_PAPER_ROLL_HPP

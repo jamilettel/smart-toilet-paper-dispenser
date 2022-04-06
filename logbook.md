@@ -166,3 +166,5 @@ This way, the WebApp will be notified as soon as possible whenever a change happ
 Before adding the code to the IoT device, I wanted to add the PIR sensor.
 I tried adding it for a few hours, it did not work, so I abandonned the idea of adding the PIR sensor.
 Will continue working on the IoT interactions with the server.
+
+IoT device + server are now finished. Will try to setup a react server so I can code it tomorrow.

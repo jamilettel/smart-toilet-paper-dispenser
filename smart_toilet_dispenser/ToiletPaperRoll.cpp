@@ -151,6 +151,13 @@ void ToiletPaperRoll::update()
         _timeBeforeAction -= TOILET_PAPER_MS_TICK;
         return;
     }
+    if (_measureIn > 0) {
+        _measureIn -= TOILET_PAPER_MS_TICK;
+        if (_measureIn <= 0 && _actions.size() == 0 && getState() == WORKING)
+            updateRollTime();
+        else if (_measureIn <= 0)
+            _measureIn = TOILET_PAPER_MEASURE_AFTER;
+    }
     if (_actions.size()) {
         setDirection(_actions.front().direction);
         _actions.front().timePassed += TOILET_PAPER_MS_TICK;
@@ -165,7 +172,11 @@ void ToiletPaperRoll::update()
         }
     } else if (getState() == WORKING && _ir1.getValue() == false) {
         _actions.emplace_back([this](const Action&) {
-            return _ir1.getValue() == true;
+            if (_ir1.getValue() == true) {
+                _measureIn = TOILET_PAPER_MEASURE_AFTER;
+                return true;
+            }
+            return false;
         },
             FORWARDS, 20000);
     }
@@ -178,7 +189,7 @@ void ToiletPaperRoll::setState(State state)
         onStateChange(state);
         if (state == STOPPED) {
             _actions.clear();
-            setPaperInPosition([](){}, 20000);
+            setPaperInPosition([]() {}, 20000);
         }
     }
 }
