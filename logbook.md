@@ -168,3 +168,9 @@ I tried adding it for a few hours, it did not work, so I abandonned the idea of 
 Will continue working on the IoT interactions with the server.
 
 IoT device + server are now finished. Will try to setup a react server so I can code it tomorrow.
+
+Done, react server is setup with websocket, need to make UI for the webapp, and the project will be over.
+
+## 06/04/2022
+
+Adding Docker configuration for webapp, and then will work on a design for the UI.

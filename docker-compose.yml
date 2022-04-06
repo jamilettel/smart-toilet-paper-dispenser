@@ -10,3 +10,12 @@ services:
       - ./server:/express
     restart: always
 
+  nextjs-stpd:
+    build: webapp-smart-toilet-paper
+    ports:
+      - "8080:3000"
+    container_name: nextjs-stpd
+    volumes:
+      - ./webapp-smart-toilet-paper:/nextjs
+    restart: always
+

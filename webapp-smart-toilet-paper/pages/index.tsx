@@ -1,7 +1,8 @@
 import type { NextPage } from 'next'
 import Head from 'next/head'
 import { useEffect, useState } from 'react'
-import styles from '../styles/Home.module.css'
+import { WEBSOCKET_URL } from '../utils/constants'
+import styles from './Home.module.css'
 
 type DataType = {
     values: any,
@@ -15,17 +16,13 @@ const Home: NextPage = () => {
 
     useEffect(() => {
         if (typeof window !== 'undefined') {
-            let socket = new WebSocket('ws://167.71.9.47:3000')
+            let socket = new WebSocket(WEBSOCKET_URL)
             socket.onopen = () => {
                 socket.send('subscribe')
                 socket.send('get-database')
             }
             socket.onmessage = (message) => {
-                try {
-                    const data = JSON.parse(message.data)
-                    setData(data)
-                } catch (_) {
-                }
+                try { setData(JSON.parse(message.data)) } catch (_) { }
             }
             setSock(sock)
         }
