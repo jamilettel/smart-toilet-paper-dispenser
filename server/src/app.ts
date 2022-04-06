@@ -1,9 +1,13 @@
 import * as express from 'express'
 import { Request, Response } from 'express'
 import { wss } from '@/websocket/wsSetup'
+import * as cors from 'cors';
+
 
 const app: express.Application = express()
 const port: number = parseInt(process.env.PORT || '3000')
+
+app.use(cors())
 
 app.get('/', (_req: Request, res: Response) => {
     return res.json({hello: 'world'})
