@@ -2,7 +2,7 @@
     outline: none;
     border: none;
     border-radius: 10px;
-    background: #363d66;
+    background: #363d80;
     padding: 10px 40px;
     color: white;
     cursor: pointer;
@@ -10,6 +10,15 @@
     font-family: 'Overpass';
 }
 
+.disabled {
+    background: #888;
+    cursor: not-allowed;
+}
+
 .button:hover {
-    background: #303758;
+    background: #303766;
+}
+
+.disabled:hover {
+    background: #888;
 }

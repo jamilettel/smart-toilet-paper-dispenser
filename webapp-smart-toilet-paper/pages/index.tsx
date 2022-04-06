@@ -5,7 +5,7 @@ import Button from '../components/Button'
 import { WEBSOCKET_URL } from '../utils/constants'
 import styles from './Home.module.css'
 import { buildStyles, CircularProgressbar } from 'react-circular-progressbar'
-import 'react-circular-progressbar/dist/styles.css'
+import Status from '../components/Status'
 
 type DataType = {
     values: any,
@@ -31,7 +31,9 @@ const Home: NextPage = () => {
         }
     }, [])
 
-    const percentage = data?.percentageLeft ?? 0
+    let percentage = data?.percentageLeft ?? 0
+    if (data?.status == 'error')
+        percentage = 0
 
     return (
         <div className={styles.container}>
@@ -47,23 +49,25 @@ const Home: NextPage = () => {
             <main className={styles.main}>
                 <div className={styles.content}>
                     <h1 className={styles.title}>Smart Toilet Paper Dispenser</h1>
-                    {JSON.stringify(data)}
-                    <CircularProgressbar
-                        value={percentage}
-                        text={`${percentage}%`}
-                        className={styles.percentageLeft}
-                        styles={buildStyles({
-                            pathColor: '#363d66',
-                            textColor: '#363d66',
-                            trailColor: '#ddd',
-                        })}
-                    />
+                    <div className={styles.info}>
+                        <CircularProgressbar
+                            value={percentage}
+                            text={`${percentage}%`}
+                            className={styles.percentageLeft}
+                            styles={buildStyles({
+                                pathColor: '#363d80',
+                                textColor: '#363d80',
+                                trailColor: '#ddd',
+                            })}
+                        />
+                        <Status status={data?.status ?? 'disconnected'} className={styles.status} />
+                    </div>
                     <br />
                     <Button className={styles.button} onClick={() => sock?.send('stop')} label="Stop" />
                     <Button className={styles.button} onClick={() => sock?.send('start')} label="Start" />
                     <br />
-                    <Button className={styles.button} onClick={() => sock?.send('measure')} label="Measure" />
-                    <Button className={styles.button} onClick={() => sock?.send('calibrate')} label="Calibrate" />
+                    <Button disabled={data?.status == 'calibrating'} className={styles.button} onClick={() => sock?.send('measure')} label="Measure" />
+                    <Button disabled={data?.status == 'calibrating'} className={styles.button} onClick={() => sock?.send('calibrate')} label="Calibrate" />
                 </div>
             </main>
 

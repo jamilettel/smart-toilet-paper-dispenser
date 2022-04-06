@@ -20,7 +20,7 @@
 }
 
 .title {
-    color: #363d66;
+    color: #363d80;
 }
 
 .button {
@@ -32,4 +32,12 @@
     height: 300px;
     margin-top: 50px;
     margin-bottom: 50px;
+}
+
+.info {
+    display: flex;
+    flex-direction: row-reverse;
+}
+
+.status {
 }

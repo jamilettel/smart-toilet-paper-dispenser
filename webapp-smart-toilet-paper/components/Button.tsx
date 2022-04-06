@@ -4,9 +4,20 @@ export default function Button(props: {
     onClick?: () => void,
     className?: string,
     label?: string,
+    disabled?: boolean,
 }) {
+    const onClick = props.disabled ? undefined : props.onClick;
+    console.log(props)
+    let className = styles.button
+    if (props.className)
+        className += ` ${props.className}`
+    if (props.disabled)
+        className += ` ${styles.disabled}`
     return (
-        <button className={styles.button + ' ' + props.className ?? ''} onClick={props.onClick}>
+        <button
+            className={className}
+            onClick={onClick}
+        >
             {props.label ?? 'Button'}
         </button>
     );

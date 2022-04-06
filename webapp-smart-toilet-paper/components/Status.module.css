@@ -1,0 +1,78 @@
+.status {
+    color: #363d80;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.container {
+    width: calc(100% - 20px);
+    box-shadow: inset 0 0 50px #333;
+    margin: 10px;
+    height: 100%;
+    display: flex;
+    border-radius: 10px;
+    border: #333 10px solid;
+}
+
+.disconnected {
+    background: #222;
+}
+
+.disconnected .emoji::after {
+    content: '🔌';
+    margin-left: 10px;
+}
+
+.stopped {
+    background: #555;
+}
+
+.stopped .emoji::after {
+    content: '🛑';
+    margin-left: 10px;
+}
+
+.error {
+    background: #9b4f4f;
+}
+
+.error .emoji::after {
+    content: '🗑️';
+}
+
+@keyframes rotate {
+    0% { transform: rotate(0deg); }
+    50% { transform: rotate(180deg); }
+    100% { transform: rotate(359deg); }
+}
+
+.calibrating {
+    background: #9b774f;
+}
+
+.calibrating .emoji {
+    animation-name: rotate;
+    animation-duration: 2s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
+
+.calibrating .emoji::after {
+    content: '⚙️';
+}
+
+.working {
+    background: #4e6e5d;
+}
+
+.working .emoji::after {
+    content: '🧻';
+}
+
+.statusText {
+    color: white;
+    margin: auto;
+    font-size: 32pt;
+    display: flex;
+}

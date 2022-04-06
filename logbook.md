@@ -174,3 +174,5 @@ Done, react server is setup with websocket, need to make UI for the webapp, and 
 ## 06/04/2022
 
 Adding Docker configuration for webapp, and then will work on a design for the UI.
+
+Designed and integrated webapp. Now I only need to work on the presentating for this project for tomorrow.
