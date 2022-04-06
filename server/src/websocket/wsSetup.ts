@@ -34,7 +34,9 @@ wss.on('connection', (ws) => {
         console.log(`command not found: ${args[0]}`)
     }
     ws.onclose = () => {
-        if (ws.subscribed === false)
+        if (ws.subscribed === false) {
             setStatus(ws, ['status', 'disconnected'])
+            sendToSubscribers()
+        }
     }
 })
