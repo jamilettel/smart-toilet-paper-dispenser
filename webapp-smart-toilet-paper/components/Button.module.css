@@ -1,0 +1,15 @@
+.button {
+    outline: none;
+    border: none;
+    border-radius: 10px;
+    background: #363d66;
+    padding: 10px 40px;
+    color: white;
+    cursor: pointer;
+    font-size: 15pt;
+    font-family: 'Overpass';
+}
+
+.button:hover {
+    background: #303758;
+}

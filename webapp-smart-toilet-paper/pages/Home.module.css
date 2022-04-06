@@ -1,0 +1,35 @@
+.main {
+    background-image: url('/background.png');
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    height: 100vh;
+    padding-top: 50px;
+}
+
+.content {
+    padding: 50px;
+    background: rgba(255, 255, 255, 0.85);
+    width: 1200px;
+    max-width: 1200px;
+    border-radius: 15px;
+    margin: auto;
+    backdrop-filter: blur(5px);
+    text-align: center;
+    box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
+}
+
+.title {
+    color: #363d66;
+}
+
+.button {
+    width: 250px;
+    margin: 5px;
+}
+
+.percentageLeft {
+    height: 300px;
+    margin-top: 50px;
+    margin-bottom: 50px;
+}
