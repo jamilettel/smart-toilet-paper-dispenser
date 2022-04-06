@@ -1,7 +1,7 @@
 import * as express from 'express'
 import { Request, Response } from 'express'
 import { wss } from '@/websocket/wsSetup'
-import * as cors from 'cors';
+import * as cors from 'cors'
 
 
 const app: express.Application = express()
