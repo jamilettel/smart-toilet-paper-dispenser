@@ -1,17 +1,31 @@
 import type { NextPage } from 'next'
 import Head from 'next/head'
 import { useEffect, useState } from 'react'
-import SockJS from 'sockjs-client'
 import styles from '../styles/Home.module.css'
+
+type DataType = {
+    values: any,
+    status: 'disconnected' | 'calibrating' | 'error' | 'working' | 'stopped',
+    percentageLeft: number,
+}
 
 const Home: NextPage = () => {
     const [sock, setSock] = useState(null as WebSocket | null)
+    const [data, setData] = useState(undefined as DataType | undefined)
 
     useEffect(() => {
         if (typeof window !== 'undefined') {
-            const socket = new SockJS('http://167.71.9.47:3000')
+            let socket = new WebSocket('ws://167.71.9.47:3000')
             socket.onopen = () => {
                 socket.send('subscribe')
+                socket.send('get-database')
+            }
+            socket.onmessage = (message) => {
+                try {
+                    const data = JSON.parse(message.data)
+                    setData(data)
+                } catch (_) {
+                }
             }
             setSock(sock)
         }
@@ -25,7 +39,7 @@ const Home: NextPage = () => {
             </Head>
 
             <main className={styles.main}>
-                Hello
+                {JSON.stringify(data)}
             </main>
 
         </div>
